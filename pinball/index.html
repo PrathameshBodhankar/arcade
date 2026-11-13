@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+  <meta name="theme-color" content="#14121f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Comet Pinball · Arcade Games</title>
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    .game-app { max-width: 520px; }
+    .stage { background: #0e0b1d; cursor: pointer; }
+    .hudbar .mult { color: var(--pink); }
+    .hudbar .balls { color: var(--accent-2); }
+  </style>
+</head>
+<body class="game-page">
+  <main class="game-app">
+    <header class="topbar">
+      <a class="back" href="../" aria-label="Back to Arcade">◂<span class="back-txt"> ARCADE</span></a>
+      <h1 class="logo">COMET<span>PINBALL</span></h1>
+      <div class="controls">
+        <button id="pauseBtn" class="icon-btn" type="button" aria-label="Pause">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3" height="12"/><rect x="10" y="2" width="3" height="12"/></svg>
+        </button>
+        <button id="muteBtn" class="icon-btn" type="button" aria-label="Mute sound" aria-pressed="false">
+          <svg class="ico-on" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><rect x="11" y="5" width="1.6" height="6"/><rect x="13.4" y="3" width="1.6" height="10"/></svg>
+          <svg class="ico-off" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><path d="M10.5 5.5l4 5M14.5 5.5l-4 5" stroke-width="1.8" stroke="currentColor" fill="none"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="hudbar">
+      <span id="score">000000</span>
+      <span><span class="balls" id="balls">BALL 1/3</span> <span class="mult" id="mult">×1</span></span>
+      <span class="muted" id="hi">HI 000000</span>
+    </div>
+
+    <div id="stage" class="stage" role="application" aria-label="Comet Pinball. Left and right arrow keys flip, space launches.">
+      <canvas id="game"></canvas>
+      <div id="overlay" class="overlay">
+        <p id="ovTitle" class="ov-title">COMET PINBALL</p>
+        <p id="ovBadge" class="ov-badge" hidden>NEW BEST!</p>
+        <p id="ovSub" class="ov-sub">Press <kbd>Space</kbd> or tap to start</p>
+      </div>
+    </div>
+
+    <p class="help">
+      <span><kbd>←</kbd>/<kbd>Z</kbd> left flipper</span>
+      <span><kbd>→</kbd>/<kbd>/</kbd> right flipper</span>
+      <span>hold <kbd>Space</kbd>/<kbd>↓</kbd> launch</span>
+      <span><kbd>P</kbd> pause · <kbd>M</kbd> mute</span>
+      <span class="touch">Tap left / right half to flip · hold &amp; release to launch</span>
+    </p>
+  </main>
+
+  <script src="../sound.js"></script>
+  <script src="pinball.js"></script>
+</body>
+</html>
