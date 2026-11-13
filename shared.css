@@ -1,0 +1,197 @@
+/* Shared look for the Arcade homepage and its games (matches Bolt Run). */
+:root {
+  --bg: #14121f;
+  --panel: #1f1c30;
+  --line: #3a3556;
+  --ink: #f4efe1;
+  --muted: #9a94b5;
+  --accent: #f2a93b;
+  --accent-2: #5ff2e6;
+  --pink: #ff5fa2;
+  --green: #7ee07a;
+  --danger: #ff6a5c;
+  --pixel-font: "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--pixel-font);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+
+a { color: var(--accent-2); }
+
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font: 700 0.85em var(--pixel-font);
+  background: var(--panel);
+  border: 1px solid #4a4568;
+  border-bottom-width: 3px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+/* ---------- Game page chrome (Snake / Pinball) ---------- */
+.game-page {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  display: flex;
+  justify-content: center;
+}
+
+.game-app {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 3px 0 #000;
+}
+.back:hover { border-color: var(--accent); }
+.back { white-space: nowrap; }
+@media (max-width: 480px) { .back-txt { display: none; } .back { width: 40px; justify-content: center; padding: 0; } }
+
+.logo {
+  margin: 0;
+  font-size: clamp(16px, 4.2vw, 26px);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-shadow: 3px 3px 0 #000;
+  white-space: nowrap;
+}
+.logo span { color: var(--accent); margin-left: 0.25em; }
+
+.controls { display: flex; gap: 8px; }
+
+.icon-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--panel);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 3px 0 #000;
+  cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--accent); }
+.icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+.icon-btn:focus-visible, .back:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.icon-btn .ico-off { display: none; }
+.icon-btn[aria-pressed="true"] .ico-on { display: none; }
+.icon-btn[aria-pressed="true"] .ico-off { display: block; color: var(--danger); }
+
+.hudbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-size: clamp(13px, 3.4vw, 18px);
+  text-shadow: 2px 2px 0 #000;
+}
+.hudbar .muted { color: var(--muted); }
+
+.stage {
+  position: relative;
+  border: 3px solid #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 #000, 0 0 0 3px var(--line);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.stage canvas { display: block; width: 100%; height: 100%; }
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  text-align: center;
+  background: rgba(10, 8, 20, 0.55);
+  pointer-events: none;
+  transition: opacity 0.18s;
+}
+.overlay.hidden { opacity: 0; }
+.overlay p { margin: 0; text-shadow: 2px 2px 0 #000; }
+.ov-title { font-size: clamp(22px, 6vw, 36px); font-weight: 900; letter-spacing: 0.18em; }
+.ov-sub { font-size: clamp(12px, 3vw, 15px); font-weight: 700; line-height: 1.5; }
+.ov-badge {
+  font-weight: 900;
+  color: #1d1b2e;
+  background: var(--accent);
+  padding: 3px 10px;
+  border-radius: 3px;
+  text-shadow: none !important;
+}
+
+.help {
+  margin: 2px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.help .touch { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .help span { display: none; }
+  .help .touch { display: inline; }
+}
