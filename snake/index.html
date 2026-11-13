@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+  <meta name="theme-color" content="#14121f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pixel Serpent · Arcade Games</title>
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    .game-app { max-width: 560px; }
+    .stage { background: #10131f; cursor: pointer; }
+
+    .dpad {
+      display: none;
+      grid-template-columns: repeat(3, 64px);
+      grid-template-rows: repeat(3, 56px);
+      gap: 6px;
+      margin-top: 4px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    .dpad button {
+      -webkit-appearance: none; appearance: none;
+      background: var(--panel); color: var(--ink);
+      border: 2px solid var(--line); border-radius: 10px;
+      box-shadow: 0 4px 0 #000;
+      font: 900 22px var(--pixel-font);
+      touch-action: none;
+    }
+    .dpad button:active, .dpad button.on { transform: translateY(3px); box-shadow: 0 1px 0 #000; border-color: var(--green); }
+    .dpad .up { grid-area: 1 / 2; } .dpad .left { grid-area: 2 / 1; } .dpad .right { grid-area: 2 / 3; } .dpad .down { grid-area: 3 / 2; }
+    @media (hover: none) and (pointer: coarse) { .dpad { display: grid; } }
+  </style>
+</head>
+<body class="game-page">
+  <main class="game-app">
+    <header class="topbar">
+      <a class="back" href="../" aria-label="Back to Arcade">◂<span class="back-txt"> ARCADE</span></a>
+      <h1 class="logo">PIXEL<span>SERPENT</span></h1>
+      <div class="controls">
+        <button id="pauseBtn" class="icon-btn" type="button" aria-label="Pause">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3" height="12"/><rect x="10" y="2" width="3" height="12"/></svg>
+        </button>
+        <button id="muteBtn" class="icon-btn" type="button" aria-label="Mute sound" aria-pressed="false">
+          <svg class="ico-on" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><rect x="11" y="5" width="1.6" height="6"/><rect x="13.4" y="3" width="1.6" height="10"/></svg>
+          <svg class="ico-off" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><path d="M10.5 5.5l4 5M14.5 5.5l-4 5" stroke-width="1.8" stroke="currentColor" fill="none"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="hudbar"><span id="score">SCORE 0000</span><span class="muted" id="hi">HI 0000</span></div>
+
+    <div id="stage" class="stage" role="application" aria-label="Pixel Serpent. Use arrow keys or swipe to steer.">
+      <canvas id="game"></canvas>
+      <div id="overlay" class="overlay">
+        <p id="ovTitle" class="ov-title">PIXEL SERPENT</p>
+        <p id="ovBadge" class="ov-badge" hidden>NEW BEST!</p>
+        <p id="ovSub" class="ov-sub">Press <kbd>Space</kbd> or tap to start<br>Steer with arrows · swipe · D-pad</p>
+      </div>
+    </div>
+
+    <div class="dpad" id="dpad" aria-label="Direction pad">
+      <button class="up" data-dir="up" aria-label="Up">▲</button>
+      <button class="left" data-dir="left" aria-label="Left">◀</button>
+      <button class="right" data-dir="right" aria-label="Right">▶</button>
+      <button class="down" data-dir="down" aria-label="Down">▼</button>
+    </div>
+
+    <p class="help">
+      <span><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> / <kbd>WASD</kbd> steer</span>
+      <span><kbd>P</kbd> pause</span>
+      <span><kbd>M</kbd> mute</span>
+      <span class="touch">Swipe on the board or use the D-pad</span>
+    </p>
+  </main>
+
+  <script src="../sound.js"></script>
+  <script src="snake.js"></script>
+</body>
+</html>
