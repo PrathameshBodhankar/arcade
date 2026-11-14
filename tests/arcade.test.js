@@ -34,7 +34,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const home = track(await browser.newPage({ viewport: { width: 1200, height: 900 } }));
   await home.goto(url('index.html'));
   const cards = await home.$$eval('.card', (els) => els.map((e) => ({ href: e.getAttribute('href'), game: e.dataset.game })));
-  ok(cards.length === 4, 'homepage shows 4 game cards');
+  ok(cards.length === 5, 'homepage shows 5 game cards');
   ok(cards.some((c) => c.href === 'chess/'), 'Mate in One card links inside the arcade');
   ok(cards.some((c) => c.href === 'https://prathameshbodhankar.github.io/bolt-run/'), 'Bolt Run card links to the existing Bolt Run site');
   ok(cards.some((c) => c.href === 'snake/') && cards.some((c) => c.href === 'pinball/'), 'Snake and Pinball cards link inside the arcade');
@@ -47,7 +47,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   ok(await home.evaluate(() => !!window.__snake), 'clicking Snake opens the snake game');
   await home.click('a.back');
   await home.waitForLoadState();
-  ok((await home.$$('.card')).length === 4, 'back button returns to the arcade');
+  ok((await home.$$('.card')).length === 5, 'back button returns to the arcade');
 
   // ---------------- Snake ----------------
   const sn = track(await browser.newPage({ viewport: { width: 1000, height: 800 } }));
