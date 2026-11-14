@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
   <meta name="theme-color" content="#14121f">
-  <meta name="description" content="Arcade Games — free pixel-art browser games: Bolt Run, Pixel Serpent and Comet Pinball. Play on desktop or phone.">
+  <meta name="description" content="Arcade Games — free pixel-art browser games: Bolt Run, Pixel Serpent, Comet Pinball and Mate in One (1000 chess puzzles). Play on desktop or phone.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -32,7 +32,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 20px;
     }
 
@@ -59,9 +59,10 @@
     .card h2 { margin: 0; font-size: 20px; letter-spacing: 0.12em; }
     .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; flex: 1; }
     .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
-    .best { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; }
+    .best { line-height: 1.3; font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; }
     .best b { color: var(--accent); }
     .play {
+      white-space: nowrap;
       font-weight: 900;
       letter-spacing: 0.15em;
       font-size: 14px;
@@ -180,6 +181,34 @@
           <span class="meta"><span class="best">BEST <b data-hi="arcade.pinball.hi">—</b></span><span class="play">PLAY ▸</span></span>
         </span>
       </a>
+      <a class="card" href="chess/" data-game="mate">
+        <span class="tag new">1000 LEVELS</span>
+        <span class="thumb" aria-hidden="true">
+          <svg viewBox="0 0 160 100">
+            <rect width="160" height="100" fill="#8370ba"/>
+            <g fill="#cdbfe6">
+              <rect x="0" y="0" width="20" height="20"/><rect x="40" y="0" width="20" height="20"/><rect x="80" y="0" width="20" height="20"/><rect x="120" y="0" width="20" height="20"/>
+              <rect x="20" y="20" width="20" height="20"/><rect x="60" y="20" width="20" height="20"/><rect x="100" y="20" width="20" height="20"/><rect x="140" y="20" width="20" height="20"/>
+              <rect x="0" y="40" width="20" height="20"/><rect x="40" y="40" width="20" height="20"/><rect x="80" y="40" width="20" height="20"/><rect x="120" y="40" width="20" height="20"/>
+              <rect x="20" y="60" width="20" height="20"/><rect x="60" y="60" width="20" height="20"/><rect x="100" y="60" width="20" height="20"/><rect x="140" y="60" width="20" height="20"/>
+              <rect x="0" y="80" width="20" height="20"/><rect x="40" y="80" width="20" height="20"/><rect x="80" y="80" width="20" height="20"/><rect x="120" y="80" width="20" height="20"/>
+            </g>
+            <rect x="100" y="0" width="20" height="20" fill="rgba(255,60,60,0.6)"/>
+            <rect x="40" y="60" width="20" height="20" fill="rgba(255,224,102,0.6)"/><rect x="100" y="60" width="20" height="20" fill="rgba(255,224,102,0.6)"/>
+            <!-- black king (in check) -->
+            <g transform="translate(103 2)"><rect x="6" y="0" width="2" height="5" fill="#0b0814"/><rect x="4" y="1" width="6" height="2" fill="#0b0814"/><rect x="2" y="5" width="10" height="7" fill="#0b0814"/><rect x="3" y="6" width="8" height="5" fill="#3a3256"/><rect x="1" y="13" width="12" height="3" fill="#0b0814"/></g>
+            <!-- white queen delivering mate -->
+            <g transform="translate(103 62)"><rect x="1" y="1" width="2" height="2" fill="#140f22"/><rect x="6" y="0" width="2" height="2" fill="#140f22"/><rect x="11" y="1" width="2" height="2" fill="#140f22"/><rect x="1" y="3" width="12" height="9" fill="#140f22"/><rect x="2" y="4" width="10" height="7" fill="#f4efe1"/><rect x="1" y="13" width="12" height="3" fill="#140f22"/></g>
+            <path d="M110 58V24" stroke="#5ff2e6" stroke-width="3" stroke-dasharray="4 3"/>
+            <path d="M104 28l6-8 6 8z" fill="#5ff2e6"/>
+          </svg>
+        </span>
+        <span class="card-body">
+          <h2>MATE IN ONE</h2>
+          <p>1000 chess puzzles. Find the one move that checkmates — from novice to legend.</p>
+          <span class="meta"><span class="best">SOLVED <b data-solved="arcade.mate1.solved">0/1000</b></span><span class="play">PLAY ▸</span></span>
+        </span>
+      </a>
     </section>
 
     <footer>
@@ -195,6 +224,11 @@
       try { v = localStorage.getItem(el.dataset.hi); } catch (e) { /* storage blocked */ }
       const n = parseInt(v, 10);
       if (n > 0) el.textContent = String(n).padStart(5, '0');
+    });
+    document.querySelectorAll('[data-solved]').forEach((el) => {
+      let v = null;
+      try { v = localStorage.getItem(el.dataset.solved); } catch (e) { /* storage blocked */ }
+      el.textContent = (parseInt(v, 10) || 0) + '/1000';
     });
   </script>
 </body>
