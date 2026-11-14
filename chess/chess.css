@@ -224,3 +224,6 @@
   .pc.anim { transition: none; }
   .confetti { display: none; }
 }
+
+.save-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--muted); text-align: center; border-top: 2px dashed var(--line); padding-top: 10px; width: 100%; }
+.save-note b { color: var(--ink); }
