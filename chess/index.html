@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+  <meta name="theme-color" content="#14121f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Mate in One · Arcade Games</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="chess.css">
+</head>
+<body class="game-page">
+  <main class="game-app chess-app">
+    <header class="topbar">
+      <a class="back" id="backBtn" href="../" aria-label="Back to Arcade">◂<span class="back-txt" id="backTxt"> ARCADE</span></a>
+      <h1 class="logo">MATE<span>IN ONE</span></h1>
+      <div class="controls">
+        <button id="muteBtn" class="icon-btn" type="button" aria-label="Mute sound" aria-pressed="false">
+          <svg class="ico-on" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><rect x="11" y="5" width="1.6" height="6"/><rect x="13.4" y="3" width="1.6" height="10"/></svg>
+          <svg class="ico-off" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><path d="M10.5 5.5l4 5M14.5 5.5l-4 5" stroke-width="1.8" stroke="currentColor" fill="none"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ LEVEL MAP ============ -->
+    <section id="mapView" class="view" aria-label="Level select">
+      <div class="progress-card">
+        <div class="progress-top">
+          <div>
+            <div class="big" id="solvedCount">0 / 1000</div>
+            <div class="muted small">puzzles solved</div>
+          </div>
+          <div class="stars-total"><span class="star on">★</span> <span id="starCount">0</span><span class="muted"> / 3000</span></div>
+        </div>
+        <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        <button id="continueBtn" class="cta" type="button">PLAY LEVEL 1 ▸</button>
+      </div>
+
+      <nav class="tiers" id="tiers" aria-label="Level ranges"></nav>
+      <div class="tier-title" id="tierTitle"></div>
+      <div class="grid" id="grid" role="list"></div>
+      <p class="help">Find the one move that delivers checkmate. Levels get harder as you climb.<br>Solve on the first try without hints for ★★★.</p>
+    </section>
+
+    <!-- ============ PUZZLE ============ -->
+    <section id="playView" class="view" hidden aria-label="Puzzle">
+      <div class="play-head">
+        <div>
+          <div class="lvl" id="lvlLabel">LEVEL 1</div>
+          <div class="tier-badge" id="tierBadge">NOVICE</div>
+        </div>
+        <div class="prompt" id="prompt"><span class="dot" id="sideDot"></span><span id="promptText">White to move</span><b>Mate in 1</b></div>
+      </div>
+
+      <div class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="Chess board"></div>
+        <div id="promo" class="promo" hidden></div>
+        <div id="result" class="result" hidden>
+          <p class="result-title" id="resultTitle">CHECKMATE!</p>
+          <p class="result-stars" id="resultStars"></p>
+          <p class="result-move" id="resultMove"></p>
+          <button id="nextBtn" class="cta" type="button">NEXT LEVEL ▸</button>
+        </div>
+      </div>
+
+      <p class="feedback" id="feedback" aria-live="polite">&nbsp;</p>
+
+      <div class="actions">
+        <button id="prevBtn" class="act" type="button" aria-label="Previous level">◂</button>
+        <button id="hintBtn" class="act" type="button">HINT</button>
+        <button id="answerBtn" class="act" type="button" hidden>SHOW ANSWER</button>
+        <button id="nextLvlBtn" class="act" type="button" aria-label="Next level">▸</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../sound.js"></script>
+  <script src="core.js"></script>
+  <script src="puzzles.js"></script>
+  <script src="chess.js"></script>
+</body>
+</html>
