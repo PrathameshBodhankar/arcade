@@ -87,6 +87,8 @@
 .tile .s { font-size: 8px; letter-spacing: -1px; line-height: 1; margin-top: 2px; }
 .tile.solved { background: #2f5a3a; }
 .tile.revealed { background: #4a3b24; }
+.tile.skipped { background: #3a2f52; color: var(--muted); }
+.tile.skipped .s { font-size: 7px; letter-spacing: 0.5px; color: var(--accent); }
 .tile.current { background: var(--accent-2); color: #1d1b2e; animation: pulse 1.2s steps(2) infinite; }
 .tile.locked { background: #19162a; color: #4a4568; cursor: not-allowed; box-shadow: none; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 3px var(--accent); } }
@@ -215,6 +217,7 @@
 .act:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
 .act:disabled { opacity: 0.35; cursor: not-allowed; }
 #answerBtn { color: var(--accent); }
+#skipBtn { color: var(--muted); }
 
 .confetti { position: absolute; width: 8px; height: 8px; z-index: 11; pointer-events: none; animation: fall 1.1s ease-in forwards; }
 @keyframes fall { to { transform: translate(var(--dx), 260px) rotate(540deg); opacity: 0; } }

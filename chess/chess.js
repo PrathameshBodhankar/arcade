@@ -27,7 +27,7 @@
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } },
   };
-  let prog = { max: 1, stars: {} };      // stars[n]: 1..3 solved, 0 = answer revealed
+  let prog = { max: 1, stars: {} };      // stars[n]: 1..3 solved, 0 = answer revealed, -1 = skipped
   try { const p = JSON.parse(store.get(KEY)); if (p && p.max) prog = { max: p.max, stars: p.stars || {} }; } catch (e) { /* fresh */ }
   const solvedCount = () => Object.values(prog.stars).filter((v) => v > 0).length;
   const starCount = () => Object.values(prog.stars).reduce((a, v) => a + Math.max(0, v), 0);
@@ -89,7 +89,7 @@
     lvl: $('lvlLabel'), badge: $('tierBadge'), sideDot: $('sideDot'), promptText: $('promptText'),
     board: $('board'), promo: $('promo'), result: $('result'), resultTitle: $('resultTitle'),
     resultStars: $('resultStars'), resultMove: $('resultMove'), next: $('nextBtn'),
-    feedback: $('feedback'), hint: $('hintBtn'), answer: $('answerBtn'), prev: $('prevBtn'), nextLvl: $('nextLvlBtn'),
+    feedback: $('feedback'), hint: $('hintBtn'), answer: $('answerBtn'), skip: $('skipBtn'), prev: $('prevBtn'), nextLvl: $('nextLvlBtn'),
   };
   Sound.bindButton($('muteBtn'));
 
@@ -106,9 +106,13 @@
   // Level map
   // =================================================================
   let page = 0;
+  // "Continue" goes to the first level you haven't touched yet (skipped / revealed
+  // levels don't pull you back); once everything is visited, to the first unsolved one.
   const firstOpenLevel = () => {
-    for (let n = 1; n <= Math.min(prog.max, TOTAL); n++) if (!(prog.stars[n] > 0)) return n;
-    return Math.min(prog.max, TOTAL);
+    const top = Math.min(prog.max, TOTAL);
+    for (let n = 1; n <= top; n++) if (prog.stars[n] === undefined) return n;
+    for (let n = 1; n <= top; n++) if (!(prog.stars[n] > 0)) return n;
+    return top;
   };
 
   function renderMap() {
@@ -149,9 +153,10 @@
       if (locked) { t.classList.add('locked'); t.disabled = true; t.setAttribute('aria-label', `Level ${n}, locked`); }
       else if (st > 0) { t.classList.add('solved'); t.setAttribute('aria-label', `Level ${n}, ${st} stars`); }
       else if (st === 0) { t.classList.add('revealed'); t.setAttribute('aria-label', `Level ${n}, answer shown`); }
+      else if (st === -1) { t.classList.add('skipped'); t.setAttribute('aria-label', `Level ${n}, skipped`); }
       else t.setAttribute('aria-label', `Level ${n}`);
       if (n === next && !locked && !(st > 0)) t.classList.add('current');
-      t.innerHTML = `<span>${n}</span>${st > 0 ? `<span class="s">${'★'.repeat(st)}</span>` : ''}`;
+      t.innerHTML = `<span>${n}</span>${st > 0 ? `<span class="s">${'★'.repeat(st)}</span>` : st === -1 ? '<span class="s">SKIP</span>' : ''}`;
       t.onclick = () => go(n);
       el.grid.appendChild(t);
     }
@@ -268,6 +273,8 @@
     el.result.hidden = true;
     el.promo.hidden = true;
     el.answer.hidden = true;
+    el.skip.hidden = false;
+    el.skip.textContent = n >= TOTAL ? 'SKIP ▸ LEVELS' : 'SKIP ▸';
     el.hint.disabled = false;
     el.prev.disabled = n <= 1;
     el.nextLvl.disabled = n >= TOTAL || n + 1 > prog.max;
@@ -282,7 +289,8 @@
         game.last = [pm.from, pm.to];
         game.locked = false;
         paint();
-        feedback(prog.stars[n] > 0 ? `Solved before (${'★'.repeat(prog.stars[n])}) — play it again!` : 'Find the checkmate.', '');
+        feedback(prog.stars[n] > 0 ? `Solved before (${'★'.repeat(prog.stars[n])}) — play it again!`
+          : prog.stars[n] === -1 ? 'You skipped this one earlier — give it another go!' : 'Find the checkmate.', '');
       });
     }, 550);
   }
@@ -417,6 +425,7 @@
   // =================================================================
   function win(m, moveSan, after) {
     game.done = true;
+    el.skip.hidden = true;
     game.hint = [];
     game.check = C.kingSquare(after, after.turn);
     paint();
@@ -492,6 +501,7 @@
   el.answer.addEventListener('click', () => {
     if (game.done) return;
     clearTimeout(game.timer);
+    el.skip.hidden = true;
     game.done = true; game.locked = true; game.bad = -1; game.hint = [];
     game.pos = game.start;
     renderPieces();
@@ -509,11 +519,25 @@
     });
   });
 
+  // Skip: unlock the next level and move on. The level stays marked "SKIP" on the
+  // map (no stars) so you can come back; solving it later replaces the mark.
+  el.skip.addEventListener('click', () => {
+    if (game.done && !el.result.hidden) return;
+    Sound.init();
+    clearTimeout(game.timer);
+    if (prog.stars[game.n] === undefined) prog.stars[game.n] = -1;
+    prog.max = Math.max(prog.max, Math.min(TOTAL, game.n + 1));
+    save();
+    Sound.tone(520, 0.06, { vol: 0.2, slide: 780 });
+    if (game.n >= TOTAL) { game.lastPage = tierIndex(game.n); go(0); } else go(game.n + 1);
+  });
+
   window.addEventListener('keydown', (e) => {
     if (el.play.hidden) return;
     if (e.key === 'Escape') { game.lastPage = tierIndex(game.n); go(0); }
     else if ((e.key === 'Enter' || e.key === 'n' || e.key === 'N') && !el.result.hidden) { e.preventDefault(); el.next.click(); }
     else if (e.key === 'h' || e.key === 'H') el.hint.click();
+    else if ((e.key === 's' || e.key === 'S') && !el.skip.hidden) el.skip.click();
     else if (e.key === 'ArrowLeft' && !el.prev.disabled) el.prev.click();
     else if (e.key === 'ArrowRight' && !el.nextLvl.disabled) el.nextLvl.click();
   });
