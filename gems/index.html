@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+  <meta name="theme-color" content="#14121f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Gem Burst · Arcade Games</title>
+  <script src="../storage.js"></script>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="gems.css">
+</head>
+<body class="game-page">
+  <main class="game-app gems-app">
+    <header class="topbar">
+      <a class="back" id="backBtn" href="../" aria-label="Back to Arcade">◂<span class="back-txt" id="backTxt"> ARCADE</span></a>
+      <h1 class="logo">GEM<span>BURST</span></h1>
+      <div class="controls">
+        <button id="muteBtn" class="icon-btn" type="button" aria-label="Mute sound" aria-pressed="false">
+          <svg class="ico-on" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><rect x="11" y="5" width="1.6" height="6"/><rect x="13.4" y="3" width="1.6" height="10"/></svg>
+          <svg class="ico-off" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><path d="M10.5 5.5l4 5M14.5 5.5l-4 5" stroke-width="1.8" stroke="currentColor" fill="none"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ LEVEL MAP ============ -->
+    <section id="mapView" class="view" aria-label="Level select">
+      <div class="progress-card">
+        <div class="progress-top">
+          <div>
+            <div class="big" id="clearedCount">0 / 300</div>
+            <div class="muted small">levels cleared</div>
+          </div>
+          <div class="stars-total"><span class="star on">★</span> <span id="starCount">0</span><span class="muted"> / 900</span></div>
+        </div>
+        <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        <button id="continueBtn" class="cta" type="button">PLAY · LEVEL 1 ▸</button>
+      </div>
+      <nav class="tiers" id="tiers" aria-label="Worlds"></nav>
+      <div class="tier-title" id="tierTitle"></div>
+      <div class="grid" id="grid" role="list"></div>
+      <p class="help">Swap neighbouring gems to line up 3 or more. Match 4 for a <b>line gem</b>, an L or T for a <b>bomb</b>, 5 in a row for a <b>prism</b> — and swap two specials together for a mega blast!</p>
+      <p class="save-note">Progress saves automatically in this browser on this device.<br>On iPhone, use <b>Share → Add to Home Screen</b> so Safari keeps it.</p>
+    </section>
+
+    <!-- ============ PLAY ============ -->
+    <section id="playView" class="view" hidden aria-label="Level">
+      <div class="hud">
+        <div class="hud-left">
+          <div class="lvl" id="lvlLabel">LEVEL 1<small> / 300</small></div>
+          <div class="goals" id="goals" aria-label="Goals"></div>
+        </div>
+        <div class="moves" aria-label="Moves left"><span id="movesLeft">20</span><small>MOVES</small></div>
+      </div>
+      <div class="scorebar" aria-hidden="true">
+        <div class="score-fill" id="scoreFill"></div>
+        <span class="mark" id="mark2">★</span><span class="mark" id="mark3">★</span>
+      </div>
+      <div class="score-line"><span id="scoreText">0</span><span class="muted" id="cascadeText"></span></div>
+
+      <div id="stage" class="stage gem-stage" role="application" aria-label="Gem board. Swipe or tap two neighbouring gems to swap them.">
+        <canvas id="board"></canvas>
+        <div id="panel" class="panel" hidden></div>
+      </div>
+
+      <div class="actions">
+        <button id="prevBtn" class="act" type="button" aria-label="Previous level">◂</button>
+        <button id="retryBtn" class="act" type="button">↻ RETRY</button>
+        <button id="skipBtn" class="act" type="button" title="Skip this level">SKIP ▸</button>
+        <button id="nextLvlBtn" class="act" type="button" aria-label="Next level">▸</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../sound.js"></script>
+  <script src="engine.js"></script>
+  <script src="levels.js"></script>
+  <script src="gems.js"></script>
+</body>
+</html>
