@@ -73,8 +73,11 @@ All the games share one website address, so they also share saved data in the br
   - ★★ for solving with at most 1 mistake and 1 hint.
   - ★ otherwise.
 - **Getting unstuck:**
+  - **Skip ▸** (or the `S` key) moves straight to the next level and unlocks it, at any time.
+    - Skipped levels show **SKIP** on the level map, and you can go back to them whenever you like. Solving one later replaces the mark with stars.
+    - "Continue" always goes to your next new level, so it never pulls you back to skipped ones.
   - After 2 hints, or 3 misses, a **Show answer** button appears. Using it unlocks the next level but earns no stars.
-  - Solving or revealing a level unlocks the next one.
+  - Solving, revealing or skipping a level unlocks the next one.
 
 **The rules engine (`chess/core.js`):** it handles legal moves, including castling, en passant and promotion, plus check, checkmate, stalemate, FEN, SAN and UCI. It's checked against the standard "perft" move counts for well-known tricky test positions.
 
@@ -119,6 +122,6 @@ node tests/mate.test.js
 
 - **Engine:** perft counts match the published numbers.
 - **All 1000 puzzles:** each is legal, has exactly one mating move and the stored answer is correct. There are no duplicates.
-- **Levels and stars:** unlocking, ★★★ and ★★ ratings, wrong-move explanations and take-backs, hints, Show answer, and drag-and-drop.
+- **Levels and stars:** unlocking, ★★★ and ★★ ratings, wrong-move explanations and take-backs, hints, Show answer, Skip (button and `S` key, map marking, Continue behaviour), and drag-and-drop.
 - **Progress:** it's still there after a reload and shows on the homepage.
 - **iPhone:** in portrait and landscape, levels can be solved with taps.
