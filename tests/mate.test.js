@@ -143,12 +143,28 @@ const server = http.createServer((req, res) => {
   await sleep(900);
   ok(await p.evaluate(() => __mate.prog.stars[4] === 3), 'drag-and-drop solving works');
   await p.screenshot({ path: path.join(__dirname, 'screenshots', 'mate-desktop.png') });
+  // skip: from level 5 straight to level 6, marked on the map, Continue doesn't pull back
+  await p.click('#nextBtn'); await sleep(1100);
+  ok(await p.evaluate(() => __mate.game.n === 5) && await p.isVisible('#skipBtn'), 'skip button is shown on an unsolved level');
+  await p.click('#skipBtn'); await sleep(1100);
+  ok(await p.evaluate(() => __mate.game.n === 6 && __mate.prog.stars[5] === -1 && __mate.prog.max === 6), 'skip unlocks and opens the next level, marks the level as skipped');
+  await p.keyboard.press('s'); await sleep(1100);
+  ok(await p.evaluate(() => __mate.game.n === 7 && __mate.prog.stars[6] === -1), 'the S key also skips');
+  await p.goto(BASE + '/chess/'); await sleep(200);
+  ok(await p.$eval('.tile:nth-child(5)', (t) => t.classList.contains('skipped') && /SKIP/.test(t.textContent)), 'skipped level shows SKIP on the map');
+  ok(/LEVEL 7/.test(await p.textContent('#continueBtn')), 'Continue goes to the next new level, not back to skipped ones');
+  await p.click('.tile:nth-child(5)'); await sleep(1100);
+  mv = await moves();
+  await play(...mv.sol); await sleep(1000);
+  ok(await p.evaluate(() => __mate.prog.stars[5] === 3), 'solving a skipped level later replaces the SKIP mark with stars');
+  ok(!(await p.isVisible('#skipBtn')), 'skip button hides once the level is solved');
+
 
   // progress persists & shows on homepage
   await p.goto(BASE + '/chess/'); await sleep(200);
-  ok(await p.textContent('#solvedCount') === '3 / 1000', 'map shows solved count after reload');
+  ok(await p.textContent('#solvedCount') === '4 / 1000', 'map shows solved count after reload');
   await p.goto(BASE + '/'); await sleep(200);
-  ok(await p.textContent('[data-solved]') === '3/1000', 'arcade homepage card shows Mate in One progress');
+  ok(await p.textContent('[data-solved]') === '4/1000', 'arcade homepage card shows Mate in One progress');
 
   // direct link to a locked level falls back to the map
   await p.goto(BASE + '/chess/#/level/900'); await sleep(300);
@@ -161,6 +177,8 @@ const server = http.createServer((req, res) => {
     await m.goto(BASE + '/chess/#/level/1'); await sleep(1200);
     const fit = await m.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
     ok(fit.sw <= fit.iw, `${dev}: no sideways scroll`);
+    const row = await m.evaluate(() => { const r = document.querySelector('.actions').getBoundingClientRect(); return { right: r.right, iw: innerWidth, skip: !!document.getElementById('skipBtn').offsetWidth }; });
+    ok(row.right <= row.iw && row.skip, `${dev}: hint / skip buttons fit on screen`);
     const box = await m.locator('#board').boundingBox();
     const sol = await m.evaluate(() => { const g = __mate.game, C = __mate.C, s = C.findMove(g.pos, g.sol); return [s.from, s.to, g.flip]; });
     const at = (sq) => { const f = sq & 7, r = 7 - (sq >> 3); const col = sol[2] ? 7 - f : f, row = sol[2] ? r : 7 - r; return [box.x + (col + 0.5) * box.width / 8, box.y + (row + 0.5) * box.height / 8]; };
