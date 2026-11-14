@@ -18,6 +18,7 @@ It works on desktop and on phones, including iOS Safari. Add it to your home scr
 ```
 index.html          homepage (game cards + saved best scores)
 shared.css          shared look: colours, buttons, overlays, safe-area padding
+storage.js          save helper: persistent storage request + 'not saving' warning
 sound.js            shared WebAudio synth (no audio files, iOS-safe unlock, shared mute)
 snake/              Pixel Serpent: index.html + snake.js
 pinball/            Comet Pinball: index.html + pinball.js
@@ -27,6 +28,15 @@ chess/              Mate in One: index.html, chess.js (UI), chess.css,
 tests/arcade.test.js  Playwright tests for homepage, snake, pinball
 tests/mate.test.js    puzzle verification + Mate in One UI tests
 ```
+
+### Saving progress
+GitHub Pages only hosts files, so there's no server to save to. Instead, every game saves automatically in the player's browser (`localStorage`):
+
+- **No account needed.** Progress is kept per device and per browser.
+- **`storage.js` makes saves sturdier:**
+  - It asks the browser to keep the data permanently, so it isn't cleared when the device runs low on space.
+  - It shows a warning if the browser can't save at all, for example in private browsing.
+- **iPhone:** Safari clears website data after about 7 days without a visit. Adding the arcade to the Home Screen (Share → Add to Home Screen) keeps it. The homepage and the Mate in One level map both say this.
 
 All the games share one website address, so they also share saved data in the browser. That's how the homepage can show your Bolt Run best score too. The saved keys are `boltrun.hi`, `arcade.snake.hi`, `arcade.pinball.hi`, `arcade.mate1` (Mate in One progress), `arcade.mate1.solved` and `arcade.muted`.
 
@@ -68,21 +78,26 @@ All the games share one website address, so they also share saved data in the br
 
 **The rules engine (`chess/core.js`):** it handles legal moves, including castling, en passant and promotion, plus check, checkmate, stalemate, FEN, SAN and UCI. It's checked against the standard "perft" move counts for well-known tricky test positions.
 
-**Where the puzzles come from (`chess/tools/generate-puzzles.js`):** all 1000 are original. They come from 20,000 games between two simple bots.
+**Where the puzzles come from (`chess/tools/generate-puzzles.js`):** all 1000 are original. They come from 30,000 games between two simple bots.
 
 - **The bots:** they like captures, development and checks, and they avoid leaving pieces hanging. Occasionally they blunder, which is what creates checkmate chances.
 - **Which positions are kept:** a position counts only when all of these are true:
   - Exactly one move gives checkmate.
   - The game is past the opening.
   - Material is roughly even, so the positions look like real games.
-- **Ordering:** each candidate gets a difficulty score, and 1000 are picked evenly from easiest to hardest. The score goes up with:
+- **Difficulty:** each candidate gets a difficulty score. The score goes up with:
   - Other checks that don't work and act as decoys.
   - Mates that need a quiet move, a discovered check, under-promotion, castling or en passant.
   - The number of pieces on the board.
+- **Variety:** back-rank rook mates are by far the most common kind in games, so picking by difficulty alone would mean "rook, rook, rook…".
+  - Each group of 100 levels gets a set mix of mating pieces: about 30 queen, 26 rook, 15 bishop, 15 knight, 10 pawn and a few king/castling mates.
+  - Each piece type's puzzles get harder from group to group.
+  - Inside a group, levels still go from easier to harder, but the same piece never mates twice in a row and the same pattern doesn't repeat within 3 levels.
+  - The order is fixed, so level 37 is the same puzzle for everyone.
 
 Every puzzle is re-checked by the tests.
 
-To make a fresh set: `node chess/tools/generate-puzzles.js 20000`
+To make a fresh set: `node chess/tools/generate-puzzles.js 30000`. Add `POOL_OUT=pool.json` to also save every candidate. You can then re-pick from that pool without replaying games: `node chess/tools/generate-puzzles.js pool.json`.
 
 ## Tests
 ```
