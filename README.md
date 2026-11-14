@@ -10,6 +10,7 @@ Free, original pixel-style browser games. They're built with plain HTML, CSS, Ja
 | **Pixel Serpent** | Classic snake | `snake/` |
 | **Comet Pinball** | Physics pinball table | `pinball/` |
 | **Mate in One** | 1000 chess checkmate puzzles | `chess/` |
+| **Gem Burst** | Match-3 puzzle game, 300 levels | `gems/` |
 
 It works on desktop and on phones, including iOS Safari. Add it to your home screen to play full-screen.
 
@@ -25,8 +26,11 @@ pinball/            Comet Pinball: index.html + pinball.js
 chess/              Mate in One: index.html, chess.js (UI), chess.css,
                     core.js (chess rules engine), puzzles.js (the 1000 puzzles),
                     tools/generate-puzzles.js (how the puzzles were made)
+gems/               Gem Burst: index.html, gems.js (UI), gems.css, engine.js (match-3 rules),
+                    levels.js (the 300 levels), tools/generate-levels.js (how they were made)
 tests/arcade.test.js  Playwright tests for homepage, snake, pinball
 tests/mate.test.js    puzzle verification + Mate in One UI tests
+tests/gems.test.js    match-3 rules, level checks, Gem Burst UI tests
 ```
 
 ### Saving progress
@@ -38,7 +42,7 @@ GitHub Pages only hosts files, so there's no server to save to. Instead, every g
   - It shows a warning if the browser can't save at all, for example in private browsing.
 - **iPhone:** Safari clears website data after about 7 days without a visit. Adding the arcade to the Home Screen (Share → Add to Home Screen) keeps it. The homepage and the Mate in One level map both say this.
 
-All the games share one website address, so they also share saved data in the browser. That's how the homepage can show your Bolt Run best score too. The saved keys are `boltrun.hi`, `arcade.snake.hi`, `arcade.pinball.hi`, `arcade.mate1` (Mate in One progress), `arcade.mate1.solved` and `arcade.muted`.
+All the games share one website address, so they also share saved data in the browser. That's how the homepage can show your Bolt Run best score too. The saved keys are `boltrun.hi`, `arcade.snake.hi`, `arcade.pinball.hi`, `arcade.mate1` (Mate in One progress), `arcade.mate1.solved`, `arcade.gems` (Gem Burst progress), `arcade.gems.cleared` and `arcade.muted`.
 
 ## Pixel Serpent: how it works
 - **Board and movement:** a 20×20 grid. The snake moves one cell per tick, starting at 7 moves a second and speeding up as it eats, up to 16. Drawing slides each segment smoothly between ticks.
@@ -102,11 +106,62 @@ Every puzzle is re-checked by the tests.
 
 To make a fresh set: `node chess/tools/generate-puzzles.js 30000`. Add `POOL_OUT=pool.json` to also save every candidate. You can then re-pick from that pool without replaying games: `node chess/tools/generate-puzzles.js pool.json`.
 
+## Gem Burst: how it works
+An original match-3 game in the arcade's pixel style. It uses no artwork, names or terms from other games.
+
+- **Playing:**
+  - Swipe a gem, or tap two neighbouring gems, to swap them and line up 3 or more of a colour.
+  - Matched gems pop, the gems above fall, new ones drop in, and chain reactions score combos.
+  - If no moves are left, the board shuffles itself.
+- **Six gem types:** ruby, amber, topaz, emerald, sapphire and amethyst. Each has its own shape as well as colour, so they're easy to tell apart.
+- **Special gems:**
+
+  | Match | Makes | What it does |
+  |---|---|---|
+  | 4 in a row | Line gem | Clears its whole row or column |
+  | L or T shape | Bomb | Clears a 3×3 area |
+  | 5 in a row | Prism | Swap it with a gem to clear every gem of that colour |
+
+  Swapping two specials together gives a combined blast:
+
+  | Swap | Blast |
+  |---|---|
+  | Line + line | Cross: a full row and column |
+  | Line + bomb | Rows and columns three wide |
+  | Bomb + bomb | 5×5 area |
+  | Prism + special | Every gem of that colour becomes that special and goes off |
+  | Prism + prism | The whole board |
+- **Goals:** reach a score, collect gems of a colour, break all the ice (some takes two hits), smash all the stone (some takes two hits), or bring star coins down to the bottom. Later levels combine two goals.
+- **Moves and stars:**
+  - Each level has a move limit, and the game does not use lives or timers.
+  - Moves left over at the end are worth bonus points.
+  - Clearing the goal earns ★. Scoring past the level's two score thresholds earns ★★ or ★★★.
+- **Levels:**
+  - 300 levels across 6 worlds: Quartz Cave, Amber Woods, Topaz Dunes, Emerald Falls, Sapphire Sea and Amethyst Peak.
+  - Boards come in 11 shapes, including holes, pillars, hourglasses and crosses.
+  - **Skip ▸** and **↻ Retry** are always available. Skipped levels show SKIP on the map.
+
+**The engine (`gems/engine.js`):** it handles all the rules with no screen code, so the same file runs in the browser and in the test bots. Each move returns a list of steps (swap, clear, fall, collect, shuffle, win or lose) with a picture of the board after each. The game animates those steps exactly.
+
+**How the 300 levels were made (`gems/tools/generate-levels.js`):**
+
+1. **Design.** Each level gets a board shape, 5 or 6 colours, goals and obstacles. New goal types appear one at a time. Ice and stone get thicker later on, and double goals start after level 60.
+2. **Calibrate.** A bot plays each level dozens of times. It plays like a casual player:
+   - It can't see which gems will drop in next.
+   - About a third of its moves are just any valid move. On the first levels it's even more casual, so newcomers breeze through.
+
+   The move limit and target scores are then set so the bot wins a target share of games. That share is about 97% at the start and about 65% by level 300. Every 10th level is a harder "boss" level, with an easier one right after.
+3. **Redesign.** Levels that come out too hard or too long are redesigned easier.
+4. **Verify and set stars.** Every level is checked by a second set of bot games. The ★★ and ★★★ scores come from the bot's results: its middle score and its top 15%.
+
+To regenerate the levels: `node gems/tools/generate-levels.js 300`. It takes about 10 minutes on 2 cores.
+
 ## Tests
 ```
 npm i playwright
 node tests/arcade.test.js
 node tests/mate.test.js
+node tests/gems.test.js
 ```
 `arcade.test.js` runs 35 checks:
 
@@ -125,3 +180,10 @@ node tests/mate.test.js
 - **Levels and stars:** unlocking, ★★★ and ★★ ratings, wrong-move explanations and take-backs, hints, Show answer, Skip (button and `S` key, map marking, Continue behaviour), and drag-and-drop.
 - **Progress:** it's still there after a reload and shows on the homepage.
 - **iPhone:** in portrait and landscape, levels can be solved with taps.
+
+`gems.test.js` checks the rules, the levels and the game screen:
+
+- **Match-3 rules:** matches, refused swaps, all three special gems, prism, line and bomb combos, ice, stone and star coins.
+- **All 300 levels:** each is well-formed, and a simple bot can win a sample of them within the move limit.
+- **The game:** the level intro, swipe and tap swaps, bounce-back for moves that don't match, winning and unlocking, losing, Skip and Retry, map marks, and the homepage card.
+- **iPhone:** in portrait and landscape, the board fits and touch swaps work.
