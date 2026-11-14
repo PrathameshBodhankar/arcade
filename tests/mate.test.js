@@ -46,6 +46,26 @@ ok(bad.length === 0, 'every puzzle: legal, exactly one mating move, answer corre
 const whiteToMate = PUZZLES.filter(([fen]) => C.fromFEN(fen).turn === 'b').length;
 ok(whiteToMate > 300 && whiteToMate < 700, `mix of White and Black to move (${whiteToMate} white / ${1000 - whiteToMate} black)`);
 
+// ---------- 2b. Variety: levels mix piece types, no same piece twice in a row ----------
+const pieceOf = ([fen, prev, sol]) => {
+  const s0 = C.fromFEN(fen), s1 = C.makeMove(s0, C.findMove(s0, prev));
+  const m = C.findMove(s1, sol);
+  return m.piece.toLowerCase();
+};
+const pieces = PUZZLES.map(pieceOf);
+let repeats = 0;
+for (let i = 1; i < pieces.length; i++) if (pieces[i] === pieces[i - 1]) repeats++;
+ok(repeats <= 10, `consecutive levels use different mating pieces (${repeats} repeats in 1000)`);
+const kinds20 = new Set(pieces.slice(0, 20));
+ok(kinds20.size >= 4, `first 20 levels mix ${kinds20.size} piece types: ${pieces.slice(0, 20).join('')}`);
+let tiersOk = true;
+for (let t = 0; t < 10; t++) {
+  const tier = pieces.slice(t * 100, t * 100 + 100);
+  const maxShare = Math.max(...['q', 'r', 'b', 'n', 'p', 'k'].map((k) => tier.filter((x) => x === k).length));
+  if (maxShare > 45 || new Set(tier).size < 4) tiersOk = false;
+}
+ok(tiersOk, 'every tier of 100 mixes at least 4 piece types and no type dominates');
+
 // ---------- 3. UI ----------
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
 const server = http.createServer((req, res) => {
